@@ -1,15 +1,16 @@
 const router = require('express').Router()
-// const { authPekerja, authPerekrut } = require('../middleware/auth')
+const uploadImage = require('../middleware/multer_recruiters')
+// const { authRecruiter } = require('../middleware/auth')
 const {
   dataRecruiter,
   registerRecruiter,
-  loginRecruiter
-  //   patchRecruiter
+  loginRecruiter,
+  settingRecruiter
 } = require('../controller/c_recruiter')
 
-// +Perekrut+
+// => Recruiter
 router.get('/', dataRecruiter)
 router.post('/register', registerRecruiter)
 router.post('/login', loginRecruiter)
-// router.patch('/:id', patchRecruiter)
+router.patch('/:id', uploadImage, settingRecruiter)
 module.exports = router

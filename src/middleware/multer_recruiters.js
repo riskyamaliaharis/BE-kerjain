@@ -3,7 +3,7 @@ const helper = require('../helper/response')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/user')
+    cb(null, 'uploads/recruiter')
   },
   filename: function (req, file, cb) {
     console.log(file)
@@ -24,7 +24,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: maxSize }
-}).single('user_img')
+}).single('user_image')
 
 const uploadFilter = (request, response, next) => {
   upload(request, response, function (err) {

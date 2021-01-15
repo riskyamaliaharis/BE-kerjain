@@ -125,7 +125,7 @@ module.exports = {
         user_description
       } = request.body
       const setData = {
-        user_image,
+        user_image: request.file === undefined ? '' : request.file.filename,
         user_name,
         user_jobdesc,
         user_location,
@@ -134,18 +134,14 @@ module.exports = {
         user_updated_at: new Date()
       }
       const checkUser = await dataByIdModel(id)
-      console.log(checkUser)
-      fs.unlink(`uploads/user/${checkUser[0].user_img}`, async (error) => {
-        if (error) return helper.response(response, 400, 'gagal')
-      })
+      // console.log(checkUser)
+      // fs.unlink(`uploads/workers/${checkUser[0].user_image}`, async (error) => {
+      //   if (error) return helper.response(response, 400, 'gagal')
+      // })
       if (checkUser.length > 0) {
         const result = await settingWorkersModel(id, setData)
-        return helper.response(
-          response,
-          200,
-          `Data updated ${user_updated_at}`,
-          result
-        )
+        console.log(result)
+        return helper.response(response, 200, 'Data updated', result)
       } else {
         return helper.response(response, 404, `Data Not Found By Id ${id}`)
       }

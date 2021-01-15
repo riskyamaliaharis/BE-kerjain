@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const uploadImage = require('../middleware/multer_workers')
 // const { authPekerja } = require('../middleware/auth')
 const {
   registerWorkers,
@@ -8,10 +9,10 @@ const {
   settingWorkers
 } = require('../controller/c_workers')
 
-// +Pekerja+
+// +Workers+
 router.get('/', DataWorkers)
 router.get('/:id', dataById)
 router.post('/register', registerWorkers)
 router.post('/login', loginUser)
-router.patch('/:id', settingWorkers)
+router.patch('/:id', uploadImage, settingWorkers)
 module.exports = router

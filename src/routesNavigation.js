@@ -1,9 +1,9 @@
 const router = require('Express').Router()
-// ==> Pekerja
+// ==> Workers <==
 const workers = require('./routes/workers')
 router.use('/workers', workers)
 
-// ==> Perekrut
+// ==> Recruiter <==
 const recruiter = require('./routes/recruiter')
 router.use('/recruiter', recruiter)
 
