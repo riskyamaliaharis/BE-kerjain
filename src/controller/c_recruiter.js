@@ -1,0 +1,110 @@
+const bcrypt = require('bcrypt')
+const helper = require('../helper/response')
+const jwt = require('jsonwebtoken')
+// // const fs = require('fs')
+
+const {
+  registerRequiter,
+  loginCheckModel,
+  dataRecruiterModel
+} = require('../model/m_recruiter')
+
+module.exports = {
+  dataRecruiter: async (request, response) => {
+    try {
+      const result = await dataRecruiterModel()
+      return helper.response(response, 200, 'get Data suscces full', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  registerRecruiter: async (request, response) => {
+    try {
+      const {
+        user_name,
+        user_email,
+        user_job_type,
+        user_password
+      } = request.body
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(user_password, salt)
+      const setData = {
+        user_name,
+        user_email,
+        user_job_type,
+        user_role: 1,
+        user_password: encryptPassword
+      }
+      console.log(setData)
+      const checkDataUser = await loginCheckModel(user_email)
+      if (checkDataUser.length >= 1) {
+        return helper.response(
+          response,
+          400,
+          'An existing email company account is registered !!'
+        )
+      } else if (request.body.user_email === '') {
+        return helper.response(response, 400, 'Please Insert @email')
+      } else if (request.body.user_password === '') {
+        return helper.response(response, 400, 'Insert Password Please')
+      } else if (request.body.user_phone === '') {
+        return helper.response(response, 400, 'Insert your Phone Please')
+      } else {
+        const result = await registerRequiter(setData)
+        return helper.response(response, 200, 'ok', result)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  loginRecruiter: async (request, response) => {
+    try {
+      const { user_email, user_password } = request.body
+      console.log(request.body)
+
+      if (request.body.user_email === '') {
+        return helper.response(response, 400, 'Insert email Please :)')
+      } else if (request.body.user_password === '') {
+        return helper.response(response, 400, 'Insert Password Please :)')
+      } else {
+        const checkDataUser = await loginCheckModel(user_email)
+        console.log(checkDataUser)
+        if (checkDataUser.length > 0) {
+          const checkPassword = bcrypt.compareSync(
+            user_password,
+            checkDataUser[0].user_password
+          )
+          console.log(checkPassword)
+          if (checkPassword) {
+            const {
+              user_id,
+              user_name,
+              user_email,
+              user_role
+            } = checkDataUser[0]
+            const paylot = {
+              user_id,
+              user_name,
+              user_email,
+              user_role
+            }
+            const token = jwt.sign(paylot, 'KERJAIN', { expiresIn: '10h' })
+            const result = { ...paylot, token }
+            return helper.response(
+              response,
+              200,
+              'Succes Login +Requiter+',
+              result
+            )
+          } else {
+            return helper.response(response, 404, 'wrong password !')
+          }
+        } else {
+          return helper.response(response, 404, 'account not register !')
+        }
+      }
+    } catch (error) {
+      return helper.response(response, 404, 'bad request', error)
+    }
+  }
+}
