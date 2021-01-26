@@ -1,12 +1,14 @@
 const bcrypt = require('bcrypt')
 const helper = require('../helper/response')
 const jwt = require('jsonwebtoken')
-// const fs = require('fs')
+const fs = require('fs')
 
 const {
   registerRequiter,
   loginCheckModel,
-  dataRecruiterModel
+  dataRecruiterModel,
+  dataByIdModel,
+  settingRecruiterModel
 } = require('../model/m_recruiter')
 
 module.exports = {
@@ -114,7 +116,7 @@ module.exports = {
       const {
         user_image,
         user_name,
-        user_jobdesc,
+        user_field,
         user_location,
         user_workplace,
         user_description
@@ -122,24 +124,30 @@ module.exports = {
       const setData = {
         user_image: request.file === undefined ? '' : request.file.filename,
         user_name,
-        user_jobdesc,
+        user_field,
         user_location,
         user_workplace,
         user_description,
         user_updated_at: new Date()
       }
-      // const checkUser = await dataByIdModel(id)
-      // console.log(checkUser)
-      // fs.unlink(`uploads/workers/${checkUser[0].user_image}`, async (error) => {
-      //   if (error) return helper.response(response, 400, 'gagal')
-      // })
-      // if (checkUser.length > 0) {
-      //   const result = await settingWorkersModel(id, setData)
-      //   console.log(result)
-      //   return helper.response(response, 200, 'Data updated', result)
-      // } else {
-      //   return helper.response(response, 404, `Data Not Found By Id ${id}`)
-      // }
+      const checkUser = await dataByIdModel(id)
+      console.log(checkUser)
+      if (!checkUser.user_image) {
+        if (checkUser.length > 0) {
+          const result = await settingRecruiterModel(id, setData)
+          console.log(result)
+          return helper.response(response, 200, 'Data updated', result)
+        } else {
+          return helper.response(response, 404, `Data Not Found By Id ${id}`)
+        }
+      } else {
+        // fs.unlink(
+        //   `uploads/workers/${checkUser[0].user_image}`,
+        //   async (error) => {
+        //     if (error) return helper.response(response, 400, 'gagal')
+        //   }
+        // )
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad request', error)
     }

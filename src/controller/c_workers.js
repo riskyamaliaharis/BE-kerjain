@@ -112,6 +112,14 @@ module.exports = {
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
+  forgotPassword: async (request, response) => {
+    try {
+      console.log(request.body)
+      const { user_email } = request.body
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
   settingWorkers: async (request, response) => {
     try {
       console.log(request.body)
@@ -134,16 +142,19 @@ module.exports = {
         user_updated_at: new Date()
       }
       const checkUser = await dataByIdModel(id)
-      // console.log(checkUser)
-      // fs.unlink(`uploads/workers/${checkUser[0].user_image}`, async (error) => {
-      //   if (error) return helper.response(response, 400, 'gagal')
-      // })
-      if (checkUser.length > 0) {
-        const result = await settingWorkersModel(id, setData)
-        console.log(result)
-        return helper.response(response, 200, 'Data updated', result)
+      if (!checkUser.user_image) {
+        if (checkUser.length > 0) {
+          const result = await settingWorkersModel(id, setData)
+          console.log(result)
+          return helper.response(response, 200, 'Data updated', result)
+        }
       } else {
-        return helper.response(response, 404, `Data Not Found By Id ${id}`)
+        fs.unlink(
+          `uploads/workers/${checkUser[0].user_image}`,
+          async (error) => {
+            if (error) return helper.response(response, 400, 'gagal')
+          }
+        )
       }
     } catch (error) {
       return helper.response(response, 400, 'Bad request', error)

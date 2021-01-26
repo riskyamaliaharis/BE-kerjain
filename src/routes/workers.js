@@ -6,6 +6,7 @@ const {
   loginUser,
   DataWorkers,
   dataById,
+  forgotPassword,
   settingWorkers
 } = require('../controller/c_workers')
 
@@ -14,5 +15,6 @@ router.get('/', DataWorkers)
 router.get('/:id', dataById)
 router.post('/register', registerWorkers)
 router.post('/login', loginUser)
+router.post('/forgot', forgotPassword)
 router.patch('/:id', uploadImage, settingWorkers)
 module.exports = router
